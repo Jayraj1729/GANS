@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Github actions Vulnerability Scanner - Dashboard</title>
+</head>
+<body>
+  <h1>Github actions Vulnerability Scanner - Dashboard</h1>
+  <p>Welcome to the dashboard!</p>
+  {% if 'access_token' not in session %}
+    <p>Please <a href="/login">log in with GitHub</a> to continue.</p>
+  {% else %}
+    <p>Logged in as {{ session['access_token']['access_token'] }}.</p>
+    <form method="get" action="/dashboard">
+      <label for="repo_url">Repository URL:</label>
+      <input type="text" name="repo_url" id="repo_url">
+      <input type="submit" value="Scan repository">
+    </form>
+    {% if 'scan_results' in session %}
+      <h2>Scan results</h2>
+      <p>{{ session['scan_results'] }}</p>
+    {% endif %}
+  {% endif %}
+</body>
+</html>
