@@ -20,7 +20,7 @@ def dashboard():
         session['scan_results'] = scan_results
     return redirect('/dashboard')
     return render_template('dashboard.html', scan_results=scan_results)
-
+#
 @app.route('/login')
 def login():
     github = Github()
