@@ -10,16 +10,20 @@ app.secret_key = os.environ['FLASK_SECRET_KEY']
 def index():
     return render_template('index.html')
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if 'access_token' not in session:
         return redirect('/login')
-    repo_url = request.args.get('repo_url')
-    if repo_url:
-        scan_results = scanner.scan_repository(repo_url)
+    access_token = session['access_token']
+    if request.method == 'POST':
+        repo_url = request.form['repo_url']
+        scan_results = scanner.scan_repository(access_token, repo_url)
         session['scan_results'] = scan_results
-    return redirect('/dashboard')
-    return render_template('dashboard.html', scan_results=scan_results)
+        return redirect('/dashboard')
+    else:
+        scan_results = session.get('scan_results', None)
+        return render_template('dashboard.html', scan_results=scan_results)
+
 #
 @app.route('/login')
 def login():
@@ -28,6 +32,7 @@ def login():
     authorization_url, state = github.authorization_url(client_id=os.environ['GITHUB_CLIENT_ID'], redirect_uri=redirect_uri, scope=['repo'])
     session['oauth_state'] = state
     return redirect(authorization_url)
+
 
 @app.route('/callback')
 def callback():
